@@ -4,7 +4,7 @@
 
 using namespace std;
 
-typedef struct Palavras{
+typedef struct Palavra{
     // 32 bits
 };
 
