@@ -12,7 +12,7 @@ class Palavra{
     public:
         string p;
     Palavra(){
-        p = "vazio"
+        p = "vazio";
     }
 };
 
