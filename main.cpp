@@ -1,26 +1,19 @@
 #include <iostream>
 #include <vector>
+#include <string>
 #include <bitset>
+#include <math.h>
 
 using namespace std;
 
-/*  6 bits indice 
-    2 bits offset bloco
-    2 bits offset palavra
-    22 bits de tag
-*/
+
 class Palavra{
     // 32 bits
     public:
-        vector<int> p;
-
+        string p;
     Palavra(){
-        //inicializando 32 bits com 0s
-        p.resize(32);
-        fill(p.begin(), p.end(), 0);
+        p = "vazio"
     }
-
-
 };
 
 class Bloco{
@@ -46,18 +39,44 @@ class Cache{
 class MemoriaDados{
     // 1024 palavras de 32 bits
     public:
+    void escreveMemoriaDados(){ //para o write back
+
+    }
 };
 
 int main(){
 
-/*A memória usa o byte adressing. Por exemplo, o endereço nº 6 se refere ao terceiro byte da segunda palavra da memória.
-Tem tanto o offset da palavra no bloco quanto o offset do byte na palavra.
-Repare que o offset de bloco no endereço 6 ficaria 01 (segunda palavra?) e o offset na palavra seria 11(terceiro byte da palavra?).
+/*  22 bits de tag
+    6 bits indice 
+    2 bits offset bloco
+    2 bits offset palavra
 */
 
-    int a = 7;
-    bitset<sizeof(a) *__CHAR_BIT__> bits(a);
-    cout << bits.to_string() << endl;
+/*  A memória usa o byte adressing. Por exemplo, o endereço nº 6 se refere ao terceiro byte da segunda palavra da memória.
+    Tem tanto o offset da palavra no bloco quanto o offset do byte na palavra.
+    Repare que o offset de bloco no endereço 6 ficaria 01 (segunda palavra?) e o offset na palavra seria 10 (terceiro byte da palavra?).
+*/
+
+    Cache cache;
+    int N = 0, tipoOperacao, numeroBloco = 0;
+    string dado;
+    Palavra palavra;
+    while(cin){
+        cin >> N;
+        cin >> tipoOperacao;
+            if(tipoOperacao == 1){ //escrita
+                cin >> dado;
+                palavra.p = dado;
+                bitset<sizeof(N) *__CHAR_BIT__> bitsN(N);
+                bitset<sizeof(6) *__CHAR_BIT__> bitsIndice;
+                for(int i = 4; i <= 10; i++){
+                    bitsIndice[i - 4] = bitsN[i];
+                }
+                numeroBloco = bitsIndice.to_ulong();
+            }else{//leitura
+                
+            }
+    }    
 
 
     return 0;
