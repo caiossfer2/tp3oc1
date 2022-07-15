@@ -31,6 +31,7 @@ class Cache{
     //64 blocos. cada bloco com 4 palavras de 32 bits
     public:
         vector<Bloco> c;
+
         Cache(){
             c.resize(64);
         }
@@ -58,7 +59,8 @@ int main(){
 */
 
     Cache cache;
-    int N = 0, tipoOperacao, numeroBloco = 0;
+    MemoriaDados memoriaDados;
+    int N = 0, tipoOperacao, numeroBloco = 0, numeroPalavra;
     string dado;
     Palavra palavra;
     while(cin){
@@ -67,16 +69,27 @@ int main(){
             if(tipoOperacao == 1){ //escrita
                 cin >> dado;
                 palavra.p = dado;
+                N = 4095;
                 bitset<sizeof(N) *__CHAR_BIT__> bitsN(N);
                 bitset<sizeof(6) *__CHAR_BIT__> bitsIndice;
-                for(int i = 4; i <= 10; i++){
+                bitset<sizeof(2) *__CHAR_BIT__> bitsOffsetBloco;
+                for(int i = 4; i <= 9; i++){
                     bitsIndice[i - 4] = bitsN[i];
                 }
                 numeroBloco = bitsIndice.to_ulong();
+                bitsOffsetBloco[0] = bitsN[2];
+                bitsOffsetBloco[1] = bitsN[3];
+                numeroPalavra = bitsOffsetBloco.to_ulong();
+                cout << numeroBloco << endl;
+                cout << numeroPalavra << endl;
+                // if(cache.c[numeroBloco].b[numeroPalavra].p == "vazio"){
+
+                // }
             }else{//leitura
                 
             }
     }    
+
 
 
     return 0;
