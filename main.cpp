@@ -30,7 +30,6 @@ class Bloco{
         Bloco(){
             b.resize(4);
         }
-
 };
 
 
@@ -74,20 +73,22 @@ int main(int argc, char **argv){
     int teste = 0;
    
     string dado;
-    Palavra palavra;
     while(cin>>N){
         string linhaEntrada = ""; 
         linhaEntrada += to_string(N);
+
         bitset<sizeof(N) *__CHAR_BIT__> bitsN(N); //endereço
         bitset<sizeof(6) *__CHAR_BIT__> bitsIndice;
         for(int i = 4; i <= 9; i++){
              bitsIndice[i - 4] = bitsN[i];
         }
-        numeroBloco = bitsIndice.to_ulong();
+        numeroBloco = bitsIndice.to_ulong(); //converte binario para decimal
+
         bitset<sizeof(2) *__CHAR_BIT__> bitsOffsetBloco;
         bitsOffsetBloco[0] = bitsN[2];
         bitsOffsetBloco[1] = bitsN[3];
         numeroPalavra = bitsOffsetBloco.to_ulong();
+
         bitset<sizeof(22) *__CHAR_BIT__> bitsTag;
         for(int i = 10; i <= 31; i++){
              bitsTag[i - 10] = bitsN[i];
@@ -98,7 +99,6 @@ int main(int argc, char **argv){
         linhaEntrada += " ";
         linhaEntrada += to_string(tipoOperacao);
         
-
         if(cache.c[numeroBloco].valido && cache.c[numeroBloco].sujo && 
            cache.c[numeroBloco].tag != numeroTag){ //substituição de bloco
             memoriaDados.escreve(cache.c[numeroBloco]); //atualiza memoria de dados com os dados do bloco
@@ -112,13 +112,13 @@ int main(int argc, char **argv){
             cin >> dado;
             linhaEntrada += dado;
             linhaEntrada += " W";
-            palavra.p = dado;
             if(!cache.c[numeroBloco].valido){ 
+                //miss escrita, traz bloco para a cache
                 cache.c[numeroBloco].valido = true;           
                 cache.c[numeroBloco].tag = numeroTag;
             }
-            cache.c[numeroBloco].b[numeroPalavra].p = dado;
-            cache.c[numeroBloco].sujo = true;           
+            cache.c[numeroBloco].b[numeroPalavra].p = dado; 
+            cache.c[numeroBloco].sujo = true;   //marca como sujo para write back        
         }else{  //leitura
             numReads++;
             if(!cache.c[numeroBloco].valido){//deu miss
