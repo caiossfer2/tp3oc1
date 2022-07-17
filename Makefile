@@ -1,7 +1,6 @@
 all:
-	clear
 	g++ main.cpp -o tp3
-	./tp3 < in1.txt
+	./tp3 < in5.txt in5.txt
 
 
 
