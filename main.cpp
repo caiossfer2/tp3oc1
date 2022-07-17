@@ -4,7 +4,7 @@
 #include <bitset>
 #include <fstream>
 #include <math.h>
-/*Não entenda o código, sinta o código :D o.o */
+#include <iomanip>
 using namespace std;
 /*  22 bits de tag
     6 bits indice 
@@ -12,13 +12,7 @@ using namespace std;
     2 bits offset palavra
 */
 
-/*  A memória usa o byte adressing. Por exemplo, o endereço nº 6 se refere ao terceiro byte da segunda palavra da memória.
-    Tem tanto o offset da palavra no bloco quanto o offset do byte na palavra.
-    Repare que o offset de bloco no endereço 6 ficaria 01 (segunda palavra?) e o offset na palavra seria 10 (terceiro byte da palavra?).
-*/
-
 class Palavra{
-    // 32 bits
     public:
         string p;
     Palavra(){
@@ -54,18 +48,22 @@ class MemoriaDados{
     // 1024 palavras de 32 bits
     public:
     void escreve(Bloco bloco){ //para o write back
-        cout << "escrita na memoria de dados bloco " << endl;
+        // cout << "escrita na memoria de dados bloco " << endl;
     }
 };
 
 
 
 int main(int argc, char **argv){
+
     string nomeEntrada = argv[1]; 
+    string nomeSaida = nomeEntrada.erase(nomeEntrada.length() - 4, 4);
+    nomeSaida += "-out.txt";
+    ofstream saida(nomeSaida);
+    vector<string>linhasEntrada;
 
     Cache cache;
     MemoriaDados memoriaDados;
-
     int N = 0, tipoOperacao, numeroBloco = 0, numeroPalavra, numeroTag;
     int numMiss = 0; 
     int numHit = 0;
@@ -78,6 +76,8 @@ int main(int argc, char **argv){
     string dado;
     Palavra palavra;
     while(cin>>N){
+        string linhaEntrada = ""; 
+        linhaEntrada += to_string(N);
         bitset<sizeof(N) *__CHAR_BIT__> bitsN(N); //endereço
         bitset<sizeof(6) *__CHAR_BIT__> bitsIndice;
         for(int i = 4; i <= 9; i++){
@@ -95,6 +95,9 @@ int main(int argc, char **argv){
         numeroTag = bitsTag.to_ulong();
 
         cin >> tipoOperacao;
+        linhaEntrada += " ";
+        linhaEntrada += to_string(tipoOperacao);
+        
 
         if(cache.c[numeroBloco].valido && cache.c[numeroBloco].sujo && 
            cache.c[numeroBloco].tag != numeroTag){ //substituição de bloco
@@ -107,9 +110,10 @@ int main(int argc, char **argv){
         if(tipoOperacao == 1){ //escrita
             numWrites++;
             cin >> dado;
+            linhaEntrada += dado;
+            linhaEntrada += " W";
             palavra.p = dado;
             if(!cache.c[numeroBloco].valido){ 
-                cout << "miss de escrita" << endl;
                 cache.c[numeroBloco].valido = true;           
                 cache.c[numeroBloco].tag = numeroTag;
             }
@@ -119,30 +123,31 @@ int main(int argc, char **argv){
             numReads++;
             if(!cache.c[numeroBloco].valido){//deu miss
                 numMiss++;
-                cout<<"o endereço "<<N<<" deu miss"<<endl;
                 cache.c[numeroBloco].valido = true; //traz bloco
                 cache.c[numeroBloco].tag = numeroTag;
+                linhaEntrada += " M";
             }else{ //deu o hit
                 numHit++;
-                cout<<"o endereço "<<N<<" deu hit"<<endl;
+                linhaEntrada += " H";
             }
-
-
         }
+        linhasEntrada.push_back(linhaEntrada);
     }
 
     float missRate2, hitRate2;
-    string nomeSaida = nomeEntrada.erase(nomeEntrada.length() - 4, 4);
-    nomeSaida += "-out.txt";
-    ofstream saida(nomeSaida);
     saida << "READS: " << numReads << "\n";
     saida << "WRITES: "<< numWrites << "\n";
     saida << "HITS: "<< numHit << "\n";
     saida <<"MISSES: "<< numMiss << "\n";
+    saida << setprecision(3);
     missRate2 = (float)numMiss/numReads;
     hitRate2 = 1 - missRate2 ;
-    saida <<"HIT RATE:"<< hitRate2 << "\n";
-    saida <<"MISS RATE:"<< missRate2 << "\n";
+    saida <<"HIT RATE: "<< hitRate2 << "\n";
+    saida <<"MISS RATE: "<< missRate2 << "\n\n";
+
+    for(const auto& linha : linhasEntrada){
+        saida << linha << "\n";
+    }
 
     saida.close();
     return 0;
